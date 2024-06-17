@@ -47,7 +47,7 @@
 x-spark-common: &spark-common
   image: bitnami/spark:latest
   volumes:
-    - ./jobs:/opt/bitnami/spark/jobs  
+    - ./jobs:/opt/bitnami/spark/jobs     
     
 
 x-airflow-common:
@@ -80,8 +80,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
-    - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
-    - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/data
+    - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins    
     - ${AIRFLOW_PROJ_DIR:-.}/jobs:/opt/airflow/jobs
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
@@ -116,6 +115,8 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
@@ -237,6 +238,9 @@ services:
     ports:
       - "8888:8888"
     command: "start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
+    volumes:    
+      - ./data:/opt/data
+      - ./notebook:/opt/notebook  
 
 volumes:
   postgres-db-volume:
